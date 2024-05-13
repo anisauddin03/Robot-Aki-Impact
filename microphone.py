@@ -2,11 +2,10 @@ import sounddevice as sd
 import numpy as np
 import wave
 
-# Define constants
-SAMPLE_RATE = 44100  # Sample rate (samples per second)
-BLOCK_SIZE = 1024    # Block size for processing (number of samples per block)
-CHANNELS = 1         # Number of audio channels (1 for mono, 2 for stereo)
-FORMAT = 'int16'     # Audio format (16-bit PCM)
+# Constants for audio settings
+SAMPLE_RATE = 44100
+CHANNELS = 1  # Mono audio
+FORMAT = 'int16'  # 16-bit signed integer
 
 # Define a callback function for processing audio in real-time
 def callback(indata, frames, time, status):
@@ -22,9 +21,17 @@ def callback(indata, frames, time, status):
 # Prompt the user to specify the file path and name for saving the audio
 file_path = input("Enter the file path and name for saving the recorded audio (e.g., /path/to/save/audio.wav): ")
 
-# Open a stream for audio input
-with sd.InputStream(callback=callback, blocksize=BLOCK_SIZE,
-                     samplerate=SAMPLE_RATE, channels=CHANNELS, dtype=FORMAT):
+# Print available input devices
+print("Available input devices:")
+print(sd.query_devices())
+
+# Prompt the user to specify the input device index or name
+device = input("Enter the input device index or name: ")
+
+# Open a stream for audio input from the specified device
+with sd.InputStream(callback=callback, blocksize=SAMPLE_RATE // 10,
+                     samplerate=SAMPLE_RATE, channels=CHANNELS, dtype=FORMAT,
+                     device=device):
 
     print("Recording audio in real-time. Press Ctrl+C to stop.")
 
@@ -38,7 +45,7 @@ with sd.InputStream(callback=callback, blocksize=BLOCK_SIZE,
         # When Ctrl+C is pressed, stop recording
         print("Recording stopped.")
 
-        # Convert the buffer to a NumPy array
+        # Concatenate recorded audio buffers into a single NumPy array
         recorded_audio = np.concatenate(buffer)
 
         # Create a wave file and save the recorded audio
