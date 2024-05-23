@@ -1,29 +1,30 @@
-#download pygame library "pip install pygame"
-
 import pygame
-import sys
+import time
 
-# Initialize Pygame
-pygame.init()
-
-# Load the MP3 file
-try:
-    pygame.mixer.music.load("/home/signora/Downloads/soundtest.mp3")
-    print("MP3 file loaded successfully")
-except pygame.error:
-    print("Error loading MP3 file:", pygame.get_error())
-    sys.exit(1)
-
-# Play the MP3 file
-try:
+def play_sound(file_path):
+    # Initialize the mixer module in pygame
+    pygame.mixer.init()
+    
+    # Load the sound file
+    pygame.mixer.music.load(file_path)
+    
+    # Play the sound
     pygame.mixer.music.play()
-    print("Playing MP3 file")
-except pygame.error:
-    print("Error playing MP3 file:", pygame.get_error())
-    sys.exit(1)
+    
+    # Wait for the sound to finish playing
+    while pygame.mixer.music.get_busy():
+        time.sleep(1)
+    
 
-# Wait for the MP3 to finish playing
-while pygame.mixer.music.get_busy():
-    pygame.time.Clock().tick(10)
-
-print("MP3 playback complete")
+if __name__ == "__main__":
+    # Path to your audio file
+    sound_choice = input("1. sad \n2. rainbow \n3.winky \nchoice: ")
+    if sound_choice == "1":
+        sound_file = "sample-3s.mp3"
+    elif sound_choice == "2":
+        sound_file = "japanese.mp3"
+    elif sound_choice == "3":
+        sound_file = "acoustic.mp3"
+        
+    
+    play_sound(sound_file)
